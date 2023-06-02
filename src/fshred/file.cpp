@@ -69,6 +69,20 @@ namespace fshred {
         return _Written == _Size;
     }
 
+    bool file::seek(const uint64_t _New_pos) noexcept {
+        if (!_Myhandle) { // no file is open
+            return false;
+        }
+
+        if (_New_pos >= size()) { // out of bounds
+            return false;
+        }
+
+        long _High = static_cast<long>((_New_pos & 0xFFFF'FFFF'0000'0000) >> 32); // higher 32 bits
+        return ::SetFilePointer(
+            _Myhandle, static_cast<long>(_New_pos), &_High, FILE_BEGIN) != INVALID_SET_FILE_POINTER;
+    }
+
     uint64_t file::size() const noexcept {
         if (!_Myhandle) { // no file is open
             return 0;
@@ -84,7 +98,7 @@ namespace fshred {
             return false;
         }
 
-        long _High = static_cast<long>((_New_size & 0xFFFF'FFFF'0000'0000) >> 32);
+        long _High = static_cast<long>((_New_size & 0xFFFF'FFFF'0000'0000) >> 32); // higher 32 bits
         return ::SetFilePointer(_Myhandle, static_cast<long>(_New_size), &_High, FILE_BEGIN)
             != INVALID_SET_FILE_POINTER && ::SetEndOfFile(_Myhandle) != 0;
     }

@@ -36,6 +36,9 @@ namespace fshred {
         // tries to write _Bytes to the file
         bool write(const byte_string_view _Bytes) noexcept;
 
+        // tries to change the file pointer position
+        bool seek(const uint64_t _New_pos) noexcept;
+
         // returns the file size
         uint64_t size() const noexcept;
 
