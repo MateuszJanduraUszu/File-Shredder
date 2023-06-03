@@ -51,6 +51,8 @@ namespace fshred {
 
         void* _Myhandle;
     };
+
+    bool delete_file(const path& _Target);
 } // namespace fshred
 
 #endif // _FSHRED_FILE_HPP_

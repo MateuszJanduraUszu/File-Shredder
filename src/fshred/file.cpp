@@ -102,4 +102,8 @@ namespace fshred {
         return ::SetFilePointer(_Myhandle, static_cast<long>(_New_size), &_High, FILE_BEGIN)
             != INVALID_SET_FILE_POINTER && ::SetEndOfFile(_Myhandle) != 0;
     }
+
+    bool delete_file(const path& _Target) {
+        return ::DeleteFileW(_Target.c_str()) != 0;
+    }
 } // namespace fshred
