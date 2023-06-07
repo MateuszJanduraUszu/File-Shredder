@@ -26,8 +26,8 @@ After that, delete the `uninstall.bat` script.
 2. Locate the file you want to delete/shred.
 3. Right-click on the file.
 4. Select either `Destroy file` or `Destroy file contents` to delete/shred the file.
-5. Confirm prompt (be sure if you want to do it).
-6. Done, the file was securely deleted/wiped.
+5. Confirm the prompt to proceed with the deletion/shredding process.
+6. Done, the file will be securely deleted/shredded.
 
 ## How it works
 
