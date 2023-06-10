@@ -112,7 +112,7 @@ namespace fshred {
         static constexpr size_t _Buf_size = 4096;
         byte_t _Buf[_Buf_size];
         size_t _Chunk_size;
-        _Myfile.seek(0); // start from the begin
+        _Myfile.seek(0); // start from the begin, should success
         while (_Remaining > 0) {
 #ifdef _M_X64
             _Chunk_size = (::std::min)(_Buf_size, _Remaining);
@@ -130,7 +130,7 @@ namespace fshred {
 #ifdef _M_X64
             _Remaining -= _Chunk_size;
 #else // ^^^ _M_X64 ^^^ / vvv _M_IX86 vvv
-            _Remaining -= _Chunk_size;
+            _Remaining -= static_cast<uint64_t>(_Chunk_size);
 #endif // _M_X64
         }
 
