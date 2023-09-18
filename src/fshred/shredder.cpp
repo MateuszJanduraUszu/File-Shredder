@@ -3,9 +3,9 @@
 // Copyright (c) Mateusz Jandura. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#include <cstring>
 #include <fshred/shredder.hpp>
 #include <fshred/random.hpp>
-#include <cstring>
 #include <utility>
 
 namespace fshred {
@@ -99,11 +99,11 @@ namespace fshred {
         }
     }
 
-    _File_shredder::_File_shredder(file& _File) noexcept : _Myfile(_File), _Myeng() {}
+    _File_shredder::_File_shredder(::mjfs::file& _File) noexcept : _Myfile(_File), _Myeng() {}
 
     _File_shredder::~_File_shredder() noexcept {}
 
-    bool _File_shredder::_Run_pass(const uint8_t _Which) noexcept {
+    bool _File_shredder::_Run_pass(const uint8_t _Which, ::mjfs::file_stream& _Stream) noexcept {
         uint64_t _Remaining = _Myfile.size();
         if (_Remaining == 0) { // no data to overwrite, do nothing
             return true;
@@ -112,7 +112,7 @@ namespace fshred {
         static constexpr size_t _Buf_size = 4096;
         byte_t _Buf[_Buf_size];
         size_t _Chunk_size;
-        _Myfile.seek(0); // start from the begin, should success
+        _Stream.seek(0); // start from the begin, likely to succeed
         while (_Remaining > 0) {
 #ifdef _M_X64
             _Chunk_size = (::std::min)(_Buf_size, _Remaining);
@@ -123,7 +123,7 @@ namespace fshred {
                 return false;
             }
 
-            if (!_Myfile.write(byte_string_view{_Buf, _Chunk_size})) {
+            if (!_Stream.write(_Buf, _Chunk_size)) {
                 return false;
             }
 
@@ -134,12 +134,17 @@ namespace fshred {
 #endif // _M_X64
         }
 
-        return true;
+        return _Stream.flush(); // request to immediately write data to disk
     }
 
     bool _File_shredder::_Shred() noexcept {
+        ::mjfs::file_stream _Stream(_Myfile);
+        if (!_Stream.is_open()) { // could not open stream, break
+            return false;
+        }
+
         for (uint8_t _Which = 1; _Which <= 7; ++_Which) {
-            if (!_Run_pass(_Which)) {
+            if (!_Run_pass(_Which, _Stream)) {
                 return false;
             }
         }
@@ -147,7 +152,7 @@ namespace fshred {
         return true;
     }
 
-    bool securely_shred_file(file& _File) noexcept {
+    bool securely_shred_file(::mjfs::file& _File) noexcept {
         _File_shredder _Shredder(_File);
         return _Shredder._Shred() && _File.resize(0);
     }

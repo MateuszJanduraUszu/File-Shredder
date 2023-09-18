@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fshred/program.hpp>
-#include <filesystem>
+#include <mjfs/status.hpp>
 #include <string_view>
 #include <Windows.h>
 
@@ -35,10 +35,10 @@ namespace fshred {
         wchar_t** _Raw_args     = _Args.args();
         ::std::wstring_view _Arg;
         while (_Count-- > 0 && (!_Found_path || !_Found_delete_flag)) {
-            _Arg = ::std::wstring_view{*_Raw_args++};
+            _Arg = *_Raw_args++;
             if (!_Found_path) {
-                if (::std::filesystem::exists(path{_Arg})) {
-                    _Options.path_to_file = path{_Arg};
+                if (::mjfs::exists(_Arg)) {
+                    _Options.path_to_file = _Arg;
                     _Found_path           = true;
                     continue;
                 }
