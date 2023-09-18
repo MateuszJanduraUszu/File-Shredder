@@ -6,12 +6,12 @@
 #pragma once
 #ifndef _FSHRED_PROGRAM_HPP_
 #define _FSHRED_PROGRAM_HPP_
-#include <fshred/file.hpp>
+#include <mjfs/path.hpp>
 
 namespace fshred {
     class program_options {
     public:
-        path path_to_file;
+        ::mjfs::path path_to_file;
         bool delete_after_shredding;
 
         program_options() noexcept;
