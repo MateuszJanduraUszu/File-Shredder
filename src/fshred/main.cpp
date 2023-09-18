@@ -6,6 +6,7 @@
 #include <fshred/dialog.hpp>
 #include <fshred/program.hpp>
 #include <fshred/shredder.hpp>
+#include <mjfs/status.hpp>
 #include <Windows.h>
 
 namespace fshred {
@@ -40,20 +41,23 @@ namespace fshred {
             return _App_error::_Success;
         }
 
-        file _File(_Options.path_to_file);
-        if (!_File.is_open()) {
-            return _App_error::_Bad_file;
-        }
+        {
+            ::mjfs::file _File(_Options.path_to_file, ::mjfs::file_access::all, ::mjfs::file_share::none,
+                _Options.delete_after_shredding ? ::mjfs::file_flag::delete_on_close : ::mjfs::file_flag::none);
+            if (!_File.is_open()) {
+                return _App_error::_Bad_file;
+            }
 
-        if (!::fshred::securely_shred_file(_File)) {
-            return _App_error::_Cannot_shred_file;
-        }
-
-        if (_Options.delete_after_shredding) {
-            _File.close(); // must be closed
-            if (!::fshred::delete_file(_Options.path_to_file)) {
+            if (!::fshred::securely_shred_file(_File)) {
                 return _App_error::_Cannot_shred_file;
             }
+        } // closes and possibly deletes the file
+
+        // Note: At this step, the file should be closed and, if the caller specified a special flag,
+        //       deleted. Deletion of the file should be handled automatically based on the provided
+        //       flags, so it is valid to check whether the file still exists at this point.
+        if (_Options.delete_after_shredding && ::mjfs::exists(_Options.path_to_file)) {
+            return _App_error::_Cannot_delete_file;
         }
 
         return _App_error::_Success;
@@ -73,7 +77,7 @@ namespace fshred {
 #define _In_opt_
 #endif // _SAL_VERSION
 
-int wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ wchar_t* _Combined_args, _In_ int) {
+int __stdcall wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ wchar_t* _Combined_args, _In_ int) {
     ::fshred::program_args _Args(_Combined_args);
     return static_cast<int>(::fshred::_Entry_point(_Args));
 }
