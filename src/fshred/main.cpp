@@ -3,6 +3,7 @@
 // Copyright (c) Mateusz Jandura. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#include <cstdio>
 #include <fshred/dialog.hpp>
 #include <fshred/program.hpp>
 #include <fshred/shredder.hpp>
@@ -18,6 +19,29 @@ namespace mjx {
         _Cannot_delete_file,
         _Unknown_error
     };
+
+    inline const wchar_t* _Translate_app_error(const _App_error _Error) noexcept {
+        switch (_Error) {
+        case _App_error::_Target_not_specified:
+            return L"Target not specified or does not exist";
+        case _App_error::_Bad_file:
+            return L"Could not open the specified file";
+        case _App_error::_Cannot_shred_file:
+            return L"Failed to shred the file";
+        case _App_error::_Cannot_delete_file:
+            return L"Failed to delete the file";
+        default:
+            return L"(Unknown error)";
+        }
+    }
+
+    inline void _Report_error(const _App_error _Error) noexcept {
+        wchar_t _Msg[128] = {0}; // should fit longest possible message
+        ::swprintf_s(_Msg,
+            L"      An error occured during the program's runtime!\n\n"
+            L"      Error message: %s", _Translate_app_error(_Error));
+        report_error(_Msg);
+    }
 
     inline _App_error _Unsafe_entry_point(program_args& _Args) {
         program_options _Options;
@@ -78,11 +102,18 @@ namespace mjx {
     }
 
     inline _App_error _Entry_point(program_args& _Args) noexcept {
+        _App_error _Error;
         try {
-            return _Unsafe_entry_point(_Args);
+            _Error = _Unsafe_entry_point(_Args);
         } catch (...) {
-            return _App_error::_Unknown_error;
+            _Error = _App_error::_Unknown_error;
         }
+
+        if (_Error != _App_error::_Success) { // report an error
+            _Report_error(_Error);
+        }
+
+        return _Error;
     }
 } // namespace mjx
 
