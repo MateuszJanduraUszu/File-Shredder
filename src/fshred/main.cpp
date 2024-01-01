@@ -26,19 +26,21 @@ namespace mjx {
             return _App_error::_Target_not_specified;
         }
 
-        confirmation_status _Status;
-        if (_Options.delete_after_shredding) { // ask for permission to destroy the file
-            _Status = confirm_operation(L"Destroy file",
-                L"      Are you sure you want to destroy this file?\n"
-                L"      This action cannot be undone.");
-        } else { // ask for permission to destroy the file contents
-            _Status = confirm_operation(L"Destroy file contents",
-                L"      Are you sure you want to destroy the contents of this file?\n"
-                L"      This action cannot be undone.");
-        }
+        if (_Options.confirmation_required) {
+            confirmation_status _Status;
+            if (_Options.delete_after_shredding) { // ask for permission to destroy the file
+                _Status = confirm_operation(L"Destroy file",
+                    L"      Are you sure you want to destroy this file?\n"
+                    L"      This action cannot be undone.");
+            } else { // ask for permission to destroy the file contents
+                _Status = confirm_operation(L"Destroy file contents",
+                    L"      Are you sure you want to destroy the contents of this file?\n"
+                    L"      This action cannot be undone.");
+            }
 
-        if (_Status == confirmation_status::unconfirmed) { // no permission, do nothing
-            return _App_error::_Success;
+            if (_Status == confirmation_status::unconfirmed) { // no permission, do nothing
+                return _App_error::_Success;
+            }
         }
 
         {

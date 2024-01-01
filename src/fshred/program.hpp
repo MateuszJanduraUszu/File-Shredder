@@ -13,6 +13,7 @@ namespace mjx {
     public:
         path path_to_file;
         bool delete_after_shredding;
+        bool confirmation_required;
 
         program_options() noexcept;
         ~program_options() noexcept;

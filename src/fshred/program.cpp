@@ -10,7 +10,8 @@
 #include <shellapi.h>
 
 namespace mjx {
-    program_options::program_options() noexcept : path_to_file(), delete_after_shredding(false) {}
+    program_options::program_options() noexcept
+        : path_to_file(), delete_after_shredding(false), confirmation_required(true) {}
 
     program_options::~program_options() noexcept {}
 
@@ -32,10 +33,11 @@ namespace mjx {
     void program_args::parse(program_args& _Args, program_options& _Options) {
         bool _Path_found        = false;
         bool _Delete_flag_found = false;
+        bool _Nc_flag_found     = false;
         int _Count              = _Args.count();
         wchar_t** _Raw_args     = _Args.args();
         unicode_string_view _Arg;
-        for (; _Count-- > 0 && (!_Path_found || !_Delete_flag_found); ++_Raw_args) {
+        for (; _Count-- > 0 && (!_Path_found || !_Delete_flag_found || !_Nc_flag_found); ++_Raw_args) {
             _Arg = *_Raw_args;
             if (!_Path_found) {
                 if (::mjx::exists(_Arg)) {
@@ -49,6 +51,14 @@ namespace mjx {
                 if (_Arg == L"-d") {
                     _Options.delete_after_shredding = true;
                     _Delete_flag_found              = true;
+                    continue;
+                }
+            }
+
+            if (!_Nc_flag_found) {
+                if (_Arg == L"-nc") {
+                    _Options.confirmation_required = false;
+                    _Nc_flag_found                 = true;
                 }
             }
         }
