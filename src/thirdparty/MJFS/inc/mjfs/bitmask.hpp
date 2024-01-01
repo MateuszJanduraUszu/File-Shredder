@@ -44,11 +44,11 @@
         return _Mask;                                                                      \
     }
 
-namespace mjfs {
+namespace mjx {
     template <class _Ty>
     constexpr bool _Has_bits(const _Ty _Bitmask, const _Ty _Bits) noexcept {
         return (_Bitmask & _Bits) != _Ty{0};
     }
-} // namespace mjfs
+} // namespace mjx
 
 #endif // _MJFS_BITMASK_HPP_

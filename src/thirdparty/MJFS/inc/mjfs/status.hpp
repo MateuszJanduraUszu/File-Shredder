@@ -10,7 +10,7 @@
 #include <mjfs/api.hpp>
 #include <mjfs/path.hpp>
 
-namespace mjfs {
+namespace mjx {
     _MJFS_API bool exists(const path& _Target);
     _MJFS_API bool is_directory(const path& _Target);
     _MJFS_API bool is_regular_file(const path& _Target);
@@ -32,6 +32,6 @@ namespace mjfs {
     _MJFS_API bool is_readonly(const path& _Target);
     _MJFS_API bool make_readonly(const path& _Target);
     _MJFS_API bool make_writable(const path& _Target);
-} // namespace mjfs
+} // namespace mjx
 
 #endif // _MJFS_STATUS_HPP_

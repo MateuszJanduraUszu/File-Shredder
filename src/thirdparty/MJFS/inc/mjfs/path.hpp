@@ -7,28 +7,30 @@
 #ifndef _MJFS_PATH_HPP_
 #define _MJFS_PATH_HPP_
 #include <mjfs/api.hpp>
-#include <string>
-#include <string_view>
+#include <mjstr/string.hpp>
+#include <mjstr/string_view.hpp>
 #include <type_traits>
 
-namespace mjfs {
+namespace mjx {
     template <class _Source>
     inline constexpr bool _Is_valid_path_source = false;
 
     template <>
-    inline constexpr bool _Is_valid_path_source<::std::wstring> = true;
+    inline constexpr bool _Is_valid_path_source<unicode_string> = true;
 
     template <>
-    inline constexpr bool _Is_valid_path_source<::std::wstring_view> = true;
+    inline constexpr bool _Is_valid_path_source<unicode_string_view> = true;
 
     template <class _Source>
     using _Enable_if_valid_path_source_t = ::std::enable_if_t<_Is_valid_path_source<_Source>, int>;
 
+    class path_iterator;
+
     class _MJFS_API path { // filesystem path representation
     public:
         using value_type     = wchar_t;
-        using string_type    = ::std::wstring;
-        using const_iterator = string_type::const_iterator;
+        using string_type    = unicode_string;
+        using const_iterator = path_iterator;
         using iterator       = const_iterator;
 
         static constexpr value_type preferred_separator = L'\\';
@@ -61,7 +63,7 @@ namespace mjfs {
             return *this;
         }
 
-        // returns the native version of the path (standard string)
+        // returns the native version of the path (normal string)
         operator string_type() const;
 
         // assigns a new path
@@ -87,7 +89,7 @@ namespace mjfs {
 
         path& operator+=(const path& _Other);
         path& operator+=(const string_type& _Str);
-        path& operator+=(const ::std::wstring_view _Str);
+        path& operator+=(const unicode_string_view _Str);
         path& operator+=(const value_type* const _Str);
         path& operator+=(const value_type _Ch);
 
@@ -110,7 +112,7 @@ namespace mjfs {
         path& make_preferred() noexcept;
 
         // removes filename path component
-        path& remove_filename() noexcept;
+        path& remove_filename();
 
         // replaces the last path component with another path
         path& replace_filename(const path& _Replacement);
@@ -131,28 +133,28 @@ namespace mjfs {
         bool empty() const noexcept;
 
         // returns the root-name of the path, if present
-        path root_name() const;
+        path root_name() const noexcept;
 
         // returns the root directory of the path, if present
-        path root_directory() const;
+        path root_directory() const noexcept;
 
         // returns the root path of the path, if present
-        path root_path() const;
+        path root_path() const noexcept;
 
         // returns path relative to the root path
-        path relative_path() const;
+        path relative_path() const noexcept;
 
         // returns the path of the parent path
-        path parent_path() const;
+        path parent_path() const noexcept;
 
         // returns the filename path component
-        path filename() const;
+        path filename() const noexcept;
 
         // returns the stem path component (filename without the final extension)
-        path stem() const;
+        path stem() const noexcept;
 
         // returns the file extension path component
-        path extension() const;
+        path extension() const noexcept;
 
         // checks if the path has the root-name
         bool has_root_name() const noexcept;
@@ -185,10 +187,10 @@ namespace mjfs {
         bool is_relative() const noexcept;
 
         // returns an iterator to the beginning of the path
-        iterator begin() const noexcept;
+        iterator begin() const;
 
         // returns an iterator to the end of the path
-        iterator end() const noexcept;
+        iterator end() const;
 
     private:
         // applies the specified format
@@ -197,16 +199,60 @@ namespace mjfs {
         // replaces the specifed slashes with a replacement
         void _Replace_slashes_with(const wchar_t _Slash, const wchar_t _Replacement) noexcept;
 
-#pragma warning(suppress : 4251) // C4251: std::wstring needs to have a dll-interface
         string_type _Mystr;
     };
 
-    _MJFS_API bool operator==(const path& _Left, const path& _Right) noexcept;
-    _MJFS_API bool operator!=(const path& _Left, const path& _Right) noexcept;
+    _MJFS_API bool operator==(const path& _Left, const path& _Right);
+    _MJFS_API bool operator!=(const path& _Left, const path& _Right);
     _MJFS_API path operator/(const path& _Left, const path& _Right);
+
+    class _MJFS_API path_iterator { // input iterator for path
+    public:
+        using value_type        = path;
+        using difference_type   = ptrdiff_t;
+        using pointer           = const path*;
+        using reference         = const path&;
+        using iterator_category = ::std::input_iterator_tag;
+
+        path_iterator() noexcept;
+        path_iterator(const path_iterator& _Other);
+        path_iterator(path_iterator&& _Other) noexcept;
+        ~path_iterator() noexcept;
+
+        explicit path_iterator(const path* const _Path) noexcept;
+        explicit path_iterator(const path* const _Path, path&& _Element, const size_t _Off = 0) noexcept;
+
+        path_iterator& operator=(const path_iterator& _Other);
+        path_iterator& operator=(path_iterator&& _Other) noexcept;
+
+        // advances the iterator to the next element
+        path_iterator& operator++();
+
+        // advances the iterator to the next element (performs post-incrementation)
+        path_iterator operator++(int);
+        
+        // returns a reference to the current path element
+        reference operator*() const noexcept;
+
+        // returns a pointer to the current path element
+        pointer operator->() const noexcept;
+
+    private:
+        friend _MJFS_API bool operator==(const path_iterator&, const path_iterator&);
+
+        // checks whether remaining path contains more valid elements
+        bool _Has_more_elements() const noexcept;
+
+        const path* _Mypath; // pointer to the full path
+        path _Myelem; // current path element
+        size_t _Myoff; // current path element's offset
+    };
+
+    _MJFS_API bool operator==(const path_iterator& _Left, const path_iterator& _Right);
+    _MJFS_API bool operator!=(const path_iterator& _Left, const path_iterator& _Right);
 
     _MJFS_API path current_path();
     _MJFS_API bool current_path(const path& _New_path);
-} // namespace mjfs
+} // namespace mjx
 
 #endif // _MJFS_PATH_HPP_
