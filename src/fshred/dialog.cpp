@@ -15,4 +15,8 @@ namespace mjx {
             return confirmation_status::unconfirmed;
         }
     }
+
+    void report_error(const wchar_t* const _Msg) noexcept {
+        ::MessageBoxW(nullptr, _Msg, L"File Shredder - An error occured!", MB_ICONERROR | MB_OK);
+    }
 } // namespace mjx
