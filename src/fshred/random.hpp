@@ -6,11 +6,11 @@
 #pragma once
 #ifndef _FSHRED_RANDOM_HPP_
 #define _FSHRED_RANDOM_HPP_
-#include <fshred/utils.hpp>
 #include <cstddef>
+#include <mjstr/char_traits.hpp>
 
-namespace fshred {
+namespace mjx {
     bool fill_with_random_bytes(byte_t* const _Buf, const size_t _Count) noexcept;
-} // namespace fshred
+} // namespace mjx
 
 #endif // _FSHRED_RANDOM_HPP_

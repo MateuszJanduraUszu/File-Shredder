@@ -8,13 +8,13 @@
 #include <fshred/random.hpp>
 #include <utility>
 
-namespace fshred {
-    _Dod_5220_22_m_e::_Dod_5220_22_m_e() noexcept : _Myval() {}
+namespace mjx {
+    _Dod_5220_22_m_e::_Dod_5220_22_m_e() noexcept : _Myval(0) {}
 
     _Dod_5220_22_m_e::~_Dod_5220_22_m_e() noexcept {}
 
     bool _Dod_5220_22_m_e::_Get_fixed_value(byte_t& _Val) noexcept {
-        return ::fshred::fill_with_random_bytes(&_Val, 1);
+        return fill_with_random_bytes(&_Val, 1);
     }
 
     bool _Dod_5220_22_m_e::_Run_pass_1(byte_t* const _Buf, const size_t _Size) noexcept {
@@ -31,7 +31,7 @@ namespace fshred {
 
     bool _Dod_5220_22_m_e::_Run_pass_3(byte_t* const _Buf, const size_t _Size) noexcept {
         // "pass 3: Overwrite the data with pseudo random values"
-        return ::fshred::fill_with_random_bytes(_Buf, _Size);
+        return fill_with_random_bytes(_Buf, _Size);
     }
 
     bool _Dod_5220_22_m_e::_Reset() noexcept {
@@ -59,7 +59,7 @@ namespace fshred {
 
     bool _Dod_5220_22_m_ece::_Run_pass_4(byte_t* const _Buf, const size_t _Size) noexcept {
         // "pass 4: overwrite the data with pseudo random values, the DoD 5220.22-M (C) Standard"
-        return ::fshred::fill_with_random_bytes(_Buf, _Size);
+        return fill_with_random_bytes(_Buf, _Size);
     }
 
     bool _Dod_5220_22_m_ece::_Run_pass_5(byte_t* const _Buf, const size_t _Size) noexcept {
@@ -99,11 +99,11 @@ namespace fshred {
         }
     }
 
-    _File_shredder::_File_shredder(::mjfs::file& _File) noexcept : _Myfile(_File), _Myeng() {}
+    _File_shredder::_File_shredder(file& _File) noexcept : _Myfile(_File), _Myeng() {}
 
     _File_shredder::~_File_shredder() noexcept {}
 
-    bool _File_shredder::_Run_pass(const uint8_t _Which, ::mjfs::file_stream& _Stream) noexcept {
+    bool _File_shredder::_Run_pass(const uint8_t _Which, file_stream& _Stream) noexcept {
         uint64_t _Remaining = _Myfile.size();
         if (_Remaining == 0) { // no data to overwrite, do nothing
             return true;
@@ -112,7 +112,10 @@ namespace fshred {
         static constexpr size_t _Buf_size = 4096;
         byte_t _Buf[_Buf_size];
         size_t _Chunk_size;
-        _Stream.seek(0); // start from the begin, likely to succeed
+        if (!_Stream.seek(0)) { // start from the beginning
+            return false;
+        }
+        
         while (_Remaining > 0) {
 #ifdef _M_X64
             _Chunk_size = (::std::min)(_Buf_size, _Remaining);
@@ -138,7 +141,7 @@ namespace fshred {
     }
 
     bool _File_shredder::_Shred() noexcept {
-        ::mjfs::file_stream _Stream(_Myfile);
+        file_stream _Stream(_Myfile);
         if (!_Stream.is_open()) { // could not open stream, break
             return false;
         }
@@ -152,8 +155,8 @@ namespace fshred {
         return true;
     }
 
-    bool securely_shred_file(::mjfs::file& _File) noexcept {
+    bool securely_shred_file(file& _File) noexcept {
         _File_shredder _Shredder(_File);
         return _Shredder._Shred() && _File.resize(0);
     }
-} // namespace fshred
+} // namespace mjx

@@ -6,15 +6,9 @@
 #pragma once
 #ifndef _FSHRED_UTILS_HPP_
 #define _FSHRED_UTILS_HPP_
-#include <string>
-#include <string_view>
-#include <Windows.h>
+#include <fshred/tinywin.hpp>
 
-namespace fshred {
-    using byte_t           = unsigned char;
-    using byte_string      = ::std::basic_string<byte_t>;
-    using byte_string_view = ::std::basic_string_view<byte_t>;
-
+namespace mjx {
     class _Library_handle {
     public:
         explicit _Library_handle(const char* const _Name) noexcept : _Myptr(::LoadLibraryA(_Name)) {}
@@ -30,7 +24,7 @@ namespace fshred {
             return _Myptr != nullptr;
         }
 
-        HMODULE _Get() noexcept {
+        HMODULE _Get() const noexcept {
             return _Myptr;
         }
 
@@ -52,6 +46,6 @@ namespace fshred {
 
         return _Load_symbol<_Fn>(_Handle._Get(), _Symbol);
     }
-} // namespace fshred
+} // namespace mjx
 
 #endif // _FSHRED_UTILS_HPP_

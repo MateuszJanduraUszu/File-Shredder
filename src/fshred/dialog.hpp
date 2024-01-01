@@ -7,10 +7,10 @@
 #ifndef _FSHRED_DIALOG_HPP_
 #define _FSHRED_DIALOG_HPP_
 
-namespace fshred {
+namespace mjx {
     enum class confirmation_status : bool { unconfirmed, confirmed };
 
     confirmation_status confirm_operation(const wchar_t* const _Title, const wchar_t* const _Msg) noexcept;
-} // namespace fshred
+} // namespace mjx
 
 #endif // _FSHRED_DIALOG_HPP_

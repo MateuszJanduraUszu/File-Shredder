@@ -4,11 +4,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fshred/program.hpp>
+#include <fshred/tinywin.hpp>
 #include <mjfs/status.hpp>
-#include <string_view>
-#include <Windows.h>
+#include <mjstr/string_view.hpp>
+#include <shellapi.h>
 
-namespace fshred {
+namespace mjx {
     program_options::program_options() noexcept : path_to_file(), delete_after_shredding(false) {}
 
     program_options::~program_options() noexcept {}
@@ -28,26 +29,26 @@ namespace fshred {
         _Args = ::CommandLineToArgvW(_Combined_args, &_Count);
     }
 
-    void program_args::parse(program_args& _Args, program_options& _Options) noexcept {
-        bool _Found_path        = false;
-        bool _Found_delete_flag = false;
+    void program_args::parse(program_args& _Args, program_options& _Options) {
+        bool _Path_found        = false;
+        bool _Delete_flag_found = false;
         int _Count              = _Args.count();
         wchar_t** _Raw_args     = _Args.args();
-        ::std::wstring_view _Arg;
-        while (_Count-- > 0 && (!_Found_path || !_Found_delete_flag)) {
-            _Arg = *_Raw_args++;
-            if (!_Found_path) {
-                if (::mjfs::exists(_Arg)) {
+        unicode_string_view _Arg;
+        for (; _Count-- > 0 && (!_Path_found || !_Delete_flag_found); ++_Raw_args) {
+            _Arg = *_Raw_args;
+            if (!_Path_found) {
+                if (::mjx::exists(_Arg)) {
                     _Options.path_to_file = _Arg;
-                    _Found_path           = true;
+                    _Path_found           = true;
                     continue;
                 }
             }
 
-            if (!_Found_delete_flag) {
+            if (!_Delete_flag_found) {
                 if (_Arg == L"-d") {
                     _Options.delete_after_shredding = true;
-                    _Found_delete_flag              = true;
+                    _Delete_flag_found              = true;
                 }
             }
         }
@@ -60,4 +61,4 @@ namespace fshred {
     const int program_args::count() const noexcept {
         return _Mycount;
     }
-} // namespace fshred
+} // namespace mjx

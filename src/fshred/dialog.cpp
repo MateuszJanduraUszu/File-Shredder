@@ -4,9 +4,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fshred/dialog.hpp>
-#include <Windows.h>
+#include <fshred/tinywin.hpp>
 
-namespace fshred {
+namespace mjx {
     confirmation_status confirm_operation(const wchar_t* const _Title, const wchar_t* const _Msg) noexcept {
         switch (::MessageBoxW(nullptr, _Msg, _Title, MB_ICONWARNING | MB_YESNO)) {
         case IDYES:
@@ -15,4 +15,4 @@ namespace fshred {
             return confirmation_status::unconfirmed;
         }
     }
-} // namespace fshred
+} // namespace mjx

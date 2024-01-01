@@ -8,10 +8,10 @@
 #define _FSHRED_PROGRAM_HPP_
 #include <mjfs/path.hpp>
 
-namespace fshred {
+namespace mjx {
     class program_options {
     public:
-        ::mjfs::path path_to_file;
+        path path_to_file;
         bool delete_after_shredding;
 
         program_options() noexcept;
@@ -24,7 +24,7 @@ namespace fshred {
         ~program_args() noexcept;
 
         // parses program arguments
-        static void parse(program_args& _Args, program_options& _Options) noexcept;
+        static void parse(program_args& _Args, program_options& _Options);
 
         // returns the arguments
         wchar_t** args() const noexcept;
@@ -39,6 +39,6 @@ namespace fshred {
         wchar_t** _Myargs;
         int _Mycount;
     };
-} // namespace fshred
+} // namespace mjx
 
 #endif // _FSHRED_PROGRAM_HPP_

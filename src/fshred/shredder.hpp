@@ -12,7 +12,7 @@
 #include <mjfs/file.hpp>
 #include <mjfs/file_stream.hpp>
 
-namespace fshred {
+namespace mjx {
     class _Dod_5220_22_m_e { // DoD 5220.22-M (E) standard
     public:
         _Dod_5220_22_m_e() noexcept;
@@ -72,7 +72,7 @@ namespace fshred {
     
     class _File_shredder {
     public:
-        explicit _File_shredder(::mjfs::file& _File) noexcept;
+        explicit _File_shredder(file& _File) noexcept;
         ~_File_shredder() noexcept;
 
         // tries to securely shred the file
@@ -80,13 +80,13 @@ namespace fshred {
 
     private:
         // runs the specified pass through all data
-        bool _Run_pass(const uint8_t _Which, ::mjfs::file_stream& _Stream) noexcept;
+        bool _Run_pass(const uint8_t _Which, file_stream& _Stream) noexcept;
 
-        ::mjfs::file& _Myfile;
+        file& _Myfile;
         _Dod_5220_22_m_ece _Myeng;
     };
 
-    bool securely_shred_file(::mjfs::file& _File) noexcept;
-} // namespace fshred
+    bool securely_shred_file(file& _File) noexcept;
+} // namespace mjx
 
 #endif // _FSHRED_SHREDDER_HPP_
