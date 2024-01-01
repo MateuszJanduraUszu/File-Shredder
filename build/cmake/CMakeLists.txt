@@ -39,6 +39,7 @@ set(FSHRED_SOURCES
     "${FSHRED_SRC_DIR}/fshred/random.hpp"
     "${FSHRED_SRC_DIR}/fshred/shredder.cpp"
     "${FSHRED_SRC_DIR}/fshred/shredder.hpp"
+    "${FSHRED_SRC_DIR}/fshred/tinywin.hpp"
     "${FSHRED_SRC_DIR}/fshred/utils.hpp"
 )
 
@@ -54,8 +55,19 @@ target_compile_features(fshred PRIVATE cxx_std_17)
 target_include_directories(fshred PRIVATE
     "${FSHRED_SRC_DIR}"
     "${FSHRED_SRC_DIR}/thirdparty/MJFS/inc"
+    "${FSHRED_SRC_DIR}/thirdparty/MJMEM/inc"
+    "${FSHRED_SRC_DIR}/thirdparty/MJSTR/inc"
 )
 target_link_libraries(fshred PRIVATE
+    # link MJFS module
     $<$<CONFIG:Debug>:${FSHRED_SRC_DIR}/thirdparty/MJFS/bin/${FSHRED_PLATFORM_ARCH}/Debug/mjfs.lib>
     $<$<CONFIG:Release>:${FSHRED_SRC_DIR}/thirdparty/MJFS/bin/${FSHRED_PLATFORM_ARCH}/Release/mjfs.lib>
+
+    # link MJMEM module
+    $<$<CONFIG:Debug>:${FSHRED_SRC_DIR}/thirdparty/MJMEM/bin/${FSHRED_PLATFORM_ARCH}/Debug/mjmem.lib>
+    $<$<CONFIG:Release>:${FSHRED_SRC_DIR}/thirdparty/MJMEM/bin/${FSHRED_PLATFORM_ARCH}/Release/mjmem.lib>
+
+    # link MJSTR module
+    $<$<CONFIG:Debug>:${FSHRED_SRC_DIR}/thirdparty/MJSTR/bin/${FSHRED_PLATFORM_ARCH}/Debug/mjstr.lib>
+    $<$<CONFIG:Release>:${FSHRED_SRC_DIR}/thirdparty/MJSTR/bin/${FSHRED_PLATFORM_ARCH}/Release/mjstr.lib>
 )
