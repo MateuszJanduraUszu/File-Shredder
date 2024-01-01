@@ -5,7 +5,7 @@
 
 cmake_minimum_required(VERSION 3.21)
 project(fshred
-    VERSION 1.0.1
+    VERSION 1.0.2
     DESCRIPTION "File Shredder"
     LANGUAGES CXX
 )
